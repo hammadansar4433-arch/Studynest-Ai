@@ -1,5 +1,5 @@
 (()=>{
-const REQUIRED=true; // true = everyone must sign up or log in. false = they can skip and use the app without an account.
+const REQUIRED=false; // true = everyone must sign up or log in. false = they can skip and use the app without an account.
 let user=null,mode='up',timer=0,pending=false;
 const $=s=>document.querySelector(s),E=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const api=async(a,b)=>{const r=await fetch('/api/auth'+(b?'':'?a='+a),{method:b?'POST':'GET',headers:b?{'Content-Type':'application/json'}:{},body:b?JSON.stringify({a,...b}):undefined});return r.json()};
