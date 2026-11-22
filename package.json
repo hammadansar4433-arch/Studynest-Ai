@@ -1,0 +1,10 @@
+{
+  "name": "studynest",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@google/genai": "^1.0.0",
+    "@neondatabase/serverless": "^1.0.0"
+  }
+}

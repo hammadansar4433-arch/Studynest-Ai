@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f766e">
+<title>StudyNest — Study Planner</title>
+<style>
+:root{--bg:#f4f6f1;--sf:#fcfdfa;--tx:#0f1f1a;--mu:#5f7068;--ac:#0f766e;--ac2:#e4f3ee;--ln:#dde8e1;--wr:#e11d48;--ok:#16a34a;--gold:#b8893b;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+html{scroll-behavior:smooth;scroll-padding-top:calc(70px + env(safe-area-inset-top,0px))}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]):not([data-theme="amoled"]){--bg:#07110d;--sf:#0e1b16;--tx:#eef5f0;--mu:#93aaa0;--ac:#34d399;--ac2:#112a22;--ln:#1b3128;--wr:#fb7185;--gold:#d4a95a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#07110d;--sf:#0e1b16;--tx:#eef5f0;--mu:#93aaa0;--ac:#34d399;--ac2:#112a22;--ln:#1b3128;--wr:#fb7185;--gold:#d4a95a;color-scheme:dark}
+:root[data-theme="amoled"]{--gold:#d4a95a;--bg:#000;--sf:#07110d;--tx:#eef5f0;--mu:#93aaa0;--ac:#34d399;--ac2:#0d2a20;--ln:#16382b;--wr:#fb7185;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.55 "Segoe UI",system-ui,sans-serif;padding-bottom:70px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--sf);z-index:30}
+h1,h2,h3{font-family:"Segoe UI",system-ui,sans-serif;font-weight:800;letter-spacing:-.03em;line-height:1.15;margin:0 0 .4em}
+h2{font-size:clamp(26px,5vw,38px)}h3{font-size:18px}
+em{font-family:Georgia,serif;font-weight:500;color:var(--ac)}
+a{color:var(--ac)}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--sf) 88%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--ln);display:flex;align-items:center;gap:14px;padding:10px 16px}
+.logo{font:800 21px "Segoe UI",sans-serif;color:var(--tx);text-decoration:none;white-space:nowrap}.logo em{font:italic 700 23px Georgia,serif}
+.av{display:inline-grid;place-items:center;width:32px;height:32px;border-radius:50%;background:var(--ac);color:#fff;font-weight:800;margin-right:8px;vertical-align:middle}
+nav.top{display:flex;gap:2px;overflow-x:auto;flex:1}
+nav.top a{padding:7px 11px;border-radius:999px;color:var(--mu);text-decoration:none;font-size:14px;white-space:nowrap}
+nav.top a:hover{background:var(--ac2);color:var(--ac)}
+main{max-width:980px;margin:0 auto;padding:16px}
+.sec{padding:34px 0 10px}
+.eb{display:block;color:var(--ac);font-weight:700;font-size:14px;margin-bottom:4px}
+.sub{color:var(--mu);max-width:60ch}
+.mu{color:var(--mu);font-size:14px}
+.card{background:var(--sf);border:1px solid var(--ln);border-radius:20px;padding:18px;margin-bottom:14px;box-shadow:0 12px 30px -26px var(--ac)}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.sp{justify-content:space-between}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.hero{background:linear-gradient(135deg,#5b4bf5,#8b5cf6 60%,#c084fc);color:#fff;border-radius:28px;padding:30px 22px;box-shadow:0 18px 40px -18px #5b4bf5;margin-bottom:14px}
+.hero h1{font-size:clamp(30px,7vw,50px);margin:10px 0 12px}.hero em{color:#fff;opacity:.92}
+.pill{display:inline-block;background:rgba(255,255,255,.2);border-radius:999px;padding:5px 12px;font-size:14px;text-decoration:none;color:#fff;margin:0 6px 6px 0}
+.stat b{display:block;font:800 36px "Segoe UI",sans-serif;color:var(--ac);letter-spacing:-.03em}
+input,select,textarea{font:inherit;padding:9px 12px;border-radius:12px;border:1px solid var(--ln);background:var(--bg);color:var(--tx);max-width:100%}
+textarea{width:100%;min-height:90px}
+input:focus,select:focus,textarea:focus,button:focus-visible{outline:2px solid var(--ac);outline-offset:1px}
+.b{font:inherit;font-weight:600;padding:10px 18px;border-radius:999px;border:0;background:var(--ac);color:#fff;cursor:pointer;text-decoration:none;display:inline-block}
+.b.g{background:var(--ac2);color:var(--ac)}.b.w{background:#fff;color:#5b4bf5}.b.s{padding:6px 12px;font-size:14px}
+.bar{height:10px;background:var(--ac2);border-radius:999px;overflow:hidden}.bar i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,#5b4bf5,#a78bfa)}
+.item{display:flex;gap:10px;align-items:center;padding:9px 0;border-top:1px solid var(--ln)}.item:first-of-type{border-top:0}.item>span{flex:1;min-width:0;overflow-wrap:anywhere}
+.item.done>span{text-decoration:line-through;color:var(--mu)}
+.x{background:none;border:0;color:var(--mu);cursor:pointer;font-size:18px}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.timer{background:linear-gradient(135deg,#5b4bf5,#8b5cf6);color:#fff;border-radius:28px;padding:22px;text-align:center;margin:12px 0}
+.timer b{display:block;font:800 clamp(60px,18vw,104px)/1 "Segoe UI",sans-serif;font-variant-numeric:tabular-nums}
+.chart{display:flex;gap:8px;align-items:flex-end;height:130px}.chart div{flex:1;text-align:center;font-size:12px;color:var(--mu)}.chart i{display:block;background:linear-gradient(180deg,#8b5cf6,#5b4bf5);border-radius:6px 6px 0 0;min-height:2px}
+.heat{display:grid;grid-template-rows:repeat(7,11px);grid-auto-flow:column;grid-auto-columns:11px;gap:3px;overflow-x:auto;padding-bottom:6px}
+.heat i{background:var(--ac2);border-radius:3px}.heat .l1{background:#c4bdff}.heat .l2{background:#9a8dff}.heat .l3{background:#6f5df7}.heat .l4{background:#4a39d6}
+.fc{min-height:170px;display:grid;place-items:center;text-align:center;font:700 22px "Segoe UI",sans-serif;cursor:pointer;border:2px dashed var(--ln);border-radius:20px;padding:20px;background:var(--bg)}
+.days{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}.days .card{margin:0;padding:12px}.now{outline:2px solid var(--ac);box-shadow:0 0 18px var(--ac)}
+.msgs{max-height:400px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;margin:12px 0}
+.m{padding:10px 14px;border-radius:16px;max-width:92%;overflow-wrap:anywhere}.m.user{background:var(--ac);color:#fff;align-self:flex-end}.m.assistant{background:var(--ac2)}
+.out{white-space:pre-wrap;overflow-wrap:anywhere;margin-top:10px}
+.badge{text-align:center;padding:10px;border-radius:16px;background:var(--ac2);font-size:13px}.badge.off{opacity:.4;filter:grayscale(1)}.badge b{display:block;font-size:26px}
+ol,ul{padding-left:20px;margin:6px 0}
+.tab{position:fixed;inset:auto 0 0;z-index:25;display:flex;background:var(--sf);border-top:1px solid var(--ln);padding-bottom:env(safe-area-inset-bottom,0px)}
+.tab a{flex:1;text-align:center;padding:10px 0;font-size:12px;color:var(--mu);text-decoration:none}.tab a b{display:block;font-size:18px}
+@media(min-width:760px){.tab{display:none}body{padding-bottom:0}}
+@media(max-width:759px){nav.top{display:none}header{justify-content:space-between}}
+footer{border-top:1px solid var(--ln);padding:26px 16px;text-align:center}
+#wz{position:fixed;inset:0;z-index:50;background:var(--bg);overflow:auto;padding:max(24px,env(safe-area-inset-top,0px)) 16px 40px}
+#wz>div{max-width:520px;margin:0 auto}
+.opt{display:block;width:100%;text-align:left;padding:14px;margin:8px 0;border-radius:16px;border:2px solid var(--ln);background:var(--sf);color:var(--tx);font:inherit;cursor:pointer}.opt.on{border-color:var(--ac);background:var(--ac2)}
+body{background:radial-gradient(900px 500px at 85% -10%,color-mix(in srgb,var(--ac) 14%,transparent),transparent),radial-gradient(700px 400px at -10% 25%,color-mix(in srgb,var(--gold) 10%,transparent),transparent),var(--bg);background-attachment:fixed}
+h1,h2,h3,.logo,.stat b,.timer b{font-family:Georgia,"Times New Roman",serif}
+h1,h2,h3{font-weight:700;letter-spacing:-.02em}
+h3{font-size:19px}
+em{font-style:italic;font-weight:500;background:linear-gradient(90deg,var(--ac),var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent}
+.eb{letter-spacing:.16em;text-transform:uppercase;font-size:12px;color:var(--gold)}
+.card{border-radius:24px;box-shadow:0 1px 0 rgba(255,255,255,.55) inset,0 26px 50px -34px rgba(40,30,110,.5)}
+header{border-bottom-color:transparent;box-shadow:0 1px 0 var(--ln)}
+.logo{font-weight:700}.logo em{font-size:23px}
+.av{background:linear-gradient(135deg,#4b3fd6,#b8893b)}
+.hero{background:linear-gradient(135deg,#1e1659,#3b2fb8 55%,#6b4fd8);border-radius:32px;padding:42px 26px;position:relative;overflow:hidden;box-shadow:0 30px 60px -30px #1e1659}
+.hero::after{content:"";position:absolute;right:-80px;top:-80px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(245,217,160,.38),transparent 70%);pointer-events:none}
+.hero>*{position:relative;z-index:1}
+.hero em{background:none;-webkit-text-fill-color:#f5d9a0;color:#f5d9a0}
+.pill{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.24);backdrop-filter:blur(6px)}
+.b{background:linear-gradient(135deg,#4b3fd6,#6b4fd8);box-shadow:0 10px 22px -12px #4b3fd6}
+.b.g{background:var(--ac2);color:var(--ac);box-shadow:none}
+.b.w{background:#f5d9a0;color:#2a1f5e;box-shadow:none}
+.stat b{font-weight:700}
+.timer{background:linear-gradient(135deg,#1e1659,#3b2fb8 60%,#6b4fd8);border-radius:32px;box-shadow:0 30px 60px -34px #1e1659}.timer b{font-weight:400}
+.bar i{background:linear-gradient(90deg,#4b3fd6,#b8893b)}
+.chart i{background:linear-gradient(180deg,#b8893b,#4b3fd6)}
+.tab{backdrop-filter:blur(12px)}
+.hero,.timer{background:linear-gradient(135deg,#052e2b,#0f766e 60%,#14b8a6)}
+.hero{box-shadow:0 30px 60px -30px #052e2b}.timer{box-shadow:0 30px 60px -34px #052e2b}
+.b{background:linear-gradient(135deg,#0f766e,#14958a);box-shadow:0 10px 22px -12px #0f766e}
+.b.g{background:var(--ac2);box-shadow:none}.b.w{background:#f5d9a0;box-shadow:none}
+.av{background:linear-gradient(135deg,#0f766e,#b8893b)}
+.bar i{background:linear-gradient(90deg,#0f766e,#b8893b)}
+.chart i{background:linear-gradient(180deg,#b8893b,#0f766e)}
+.heat .l1{background:#a7e3d3}.heat .l2{background:#5fcdb4}.heat .l3{background:#1fa68f}.heat .l4{background:#0f766e}
+:root[data-pal="indigo"][data-theme="light"]{--bg:#f7f5f0;--sf:#fffdf9;--tx:#14112b;--mu:#6f6a85;--ac:#4b3fd6;--ac2:#efecfb;--ln:#e6e1ee}
+:root[data-pal="indigo"][data-theme="dark"]{--bg:#0b0a14;--sf:#15131f;--tx:#f3efe6;--mu:#a29db8;--ac:#9b8cff;--ac2:#211e35;--ln:#2b2840}
+:root[data-pal="indigo"][data-theme="amoled"]{--bg:#000;--sf:#0b0a16;--tx:#f1f0ff;--mu:#9d99c7;--ac:#8b7dff;--ac2:#1a1738;--ln:#24204a}
+:root[data-pal="indigo"] .hero,:root[data-pal="indigo"] .timer{background:linear-gradient(135deg,#1e1659,#3b2fb8 55%,#6b4fd8)}
+:root[data-pal="indigo"] .hero{box-shadow:0 30px 60px -30px #1e1659}:root[data-pal="indigo"] .timer{box-shadow:0 30px 60px -34px #1e1659}
+:root[data-pal="indigo"] .b{background:linear-gradient(135deg,#4b3fd6,#6b4fd8);box-shadow:0 10px 22px -12px #4b3fd6}
+:root[data-pal="indigo"] .b.g{background:var(--ac2);box-shadow:none}:root[data-pal="indigo"] .b.w{background:#f5d9a0;box-shadow:none}
+:root[data-pal="indigo"] .av{background:linear-gradient(135deg,#4b3fd6,#b8893b)}
+:root[data-pal="indigo"] .bar i{background:linear-gradient(90deg,#4b3fd6,#b8893b)}
+:root[data-pal="indigo"] .chart i{background:linear-gradient(180deg,#b8893b,#4b3fd6)}
+:root[data-pal="indigo"] .heat .l1{background:#c4bdff}:root[data-pal="indigo"] .heat .l2{background:#9a8dff}:root[data-pal="indigo"] .heat .l3{background:#6f5df7}:root[data-pal="indigo"] .heat .l4{background:#4a39d6}
+
+#wz{display:flex;background:radial-gradient(700px 420px at 90% -5%,color-mix(in srgb,var(--ac) 22%,transparent),transparent),radial-gradient(600px 400px at -10% 100%,color-mix(in srgb,var(--gold) 18%,transparent),transparent),var(--bg)}
+#wz[hidden]{display:none}
+#wz>div{width:100%;max-width:560px;margin:auto}
+.wc{background:var(--sf);border:1px solid var(--ln);border-radius:32px;padding:26px 22px;box-shadow:0 40px 80px -40px color-mix(in srgb,var(--ac) 60%,transparent);animation:wup .4s ease both}
+@keyframes wup{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.wprog{display:flex;gap:6px;margin-bottom:12px}.wprog i{flex:1;height:6px;border-radius:9px;background:var(--ac2)}.wprog i.on{background:linear-gradient(90deg,var(--ac),var(--gold))}
+.wart{width:92px;height:92px;border-radius:30px;display:grid;place-items:center;font-size:46px;margin:10px auto 16px;background:linear-gradient(135deg,var(--ac),color-mix(in srgb,var(--ac) 55%,var(--gold)));box-shadow:0 20px 36px -18px var(--ac)}
+.wc h2{text-align:center;font-size:clamp(26px,6vw,34px)}.wc .sub{text-align:center;margin:0 auto 18px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:14px 0 20px}.chips span{background:var(--ac2);color:var(--ac);padding:7px 13px;border-radius:999px;font-size:14px;font-weight:600}
+.opt{display:flex;align-items:center;gap:14px;transition:transform .15s,border-color .15s}.opt:hover{transform:translateY(-2px);border-color:var(--ac)}
+.opt .ic{font-size:26px;width:48px;height:48px;flex:none;display:grid;place-items:center;border-radius:14px;background:var(--ac2)}
+.opts2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.opts2 .opt{margin:0;flex-direction:column;text-align:center;justify-content:center;padding:16px 10px;gap:4px}
+@media(prefers-reduced-motion:reduce){.wc{animation:none}.opt{transition:none}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body id="top">
+<header><a class="logo" href="#top"><span class="av">S</span>Study<em>Nest</em></a>
+<nav class="top"><a href="#syllabus">Syllabus</a><a href="#focus">Focus</a><a href="#tasks">Tasks</a><a href="#timetable">Timetable</a><a href="#exams">Exams</a><a href="#flashcards">Flashcards</a><a href="#calc">Calculator</a><a href="#lab3d">3D Lab</a><a href="#progress-sec">Progress</a><a href="#buddy">AI Buddy</a><a href="#get-app">Get the app</a></nav>
+<span class="au" id="au-h"></span><button class="b g s" data-a="palt" aria-label="Change colours">🎨</button><button class="b g s" id="dk" data-a="dark" aria-label="Toggle dark mode">🌙</button><button class="b g s" data-a="class">Choose class</button></header>
+<main>
+<div class="hero"><a class="pill" href="#calc">🧮 Scientific calculator</a><a class="pill" href="#lab3d"><b>New</b> 🧊 3D Lab: physics, chemistry, biology &amp; maths</a><a class="pill" href="#get-app">Add to your Home Screen</a>
+<h1 id="hello">Good day, <em>let’s get studying.</em></h1>
+<div id="nowline"></div>
+<div class="row"><a class="b w" href="#syllabus">Open my syllabus</a><a class="b" style="background:rgba(255,255,255,.22)" href="#focus">Start a focus session</a></div></div>
+<div class="grid" id="stats"></div>
+
+<section class="sec" id="syllabus"><span class="eb">01 · Syllabus</span><h2>Your textbooks, <em>chapter by chapter.</em></h2>
+<p class="sub"><b id="sylpct">0%</b> of your syllabus read.</p><div id="sylabs"></div>
+<div class="card"><h3>How to use this</h3><ul><li><b>Tick “Read”</b> when you finish a chapter from your textbook.</li><li><b>Tick “Revised”</b> after you revise it for the exam.</li><li><b>Press “Plan”</b> to add the chapter to your task list.</li><li><b>Edit chapters</b> to match your own textbook, one chapter per line.</li></ul>
+<p class="mu">Chapter names are samples, so always check against your own textbook. <a href="https://pctb.punjab.gov.pk/" target="_blank" rel="noopener">Read the PTB books free on the Punjab board website →</a></p></div></section>
+
+<section class="sec" id="focus"><span class="eb">02 · Focus</span><h2>Deep work, <em>25 minutes</em> at a time.</h2>
+<p class="sub">Pick a subject, press start, and put your phone away. Every finished session counts towards your progress.</p>
+<div class="card"><div class="tabs" id="modes"></div>
+<div class="timer"><b id="tt">25:00</b><span id="tst">Ready to focus</span></div>
+<div class="row" style="justify-content:center"><select id="fsub"></select><button class="b" id="go">Start</button><button class="b g" id="rs">Reset</button></div>
+<div class="row" style="justify-content:center;margin-top:12px"><span class="mu">Study sounds</span><button class="b g s" data-a="snd" data-v="rain">🌧️ Rain</button><button class="b g s" data-a="snd" data-v="deep">🌊 Deep noise</button><button class="b g s" data-a="snd" data-v="white">🌬️ White noise</button><button class="b g s" data-a="snd" data-v="">Off</button></div></div>
+<div class="grid2"><div class="card"><h3>Settings</h3><div class="row"><label>Focus <input data-set="fm" type="number" min="1" max="120" style="width:70px"></label><label>Short <input data-set="sm" type="number" min="1" max="60" style="width:70px"></label><label>Long <input data-set="lm" type="number" min="1" max="90" style="width:70px"></label><label>Daily goal <input data-set="goal" type="number" min="10" max="600" style="width:80px"></label></div><p class="mu">All values in minutes.</p></div>
+<div class="card"><h3>Today’s sessions</h3><div id="sess"></div></div></div></section>
+
+<section class="sec" id="tasks"><span class="eb">03 · Tasks</span><h2>Small steps, <em>ticked off.</em></h2><p class="sub" id="tcount"></p>
+<div class="card row"><input id="nt" placeholder="New task" style="flex:1;min-width:160px"><select id="np"><option>High</option><option selected>Medium</option><option>Low</option></select><input id="nd" type="date"><button class="b" data-a="addtask">Add</button></div>
+<div class="tabs" id="tfs"></div><div class="card" id="tl"></div></section>
+
+<section class="sec" id="timetable"><span class="eb">04 · Timetable</span><h2>Your week, <em>at a glance.</em></h2><p class="sub">Classes, tuition and self-study blocks. The block happening right now glows.</p>
+<div class="card"><h3>Add a block</h3><div class="row"><select id="td"></select><input id="tn" placeholder="Class or study block" style="flex:1;min-width:150px"><label>From <input id="ta" type="time" value="16:00"></label><label>To <input id="tb" type="time" value="17:00"></label><button class="b" data-a="addblock">Add to timetable</button></div>
+<div class="row" style="margin-top:12px"><select id="city"></select><button class="b g" data-a="namaz">🕌 Add namaz times</button></div><p class="mu">Adds the 5 prayers for every day of the week. The times are rough placeholders, so edit them for your city.</p></div>
+<div class="days" id="week"></div></section>
+
+<section class="sec" id="exams"><span class="eb">05 · Exams</span><h2>Count down, <em>stay calm.</em></h2>
+<div class="card row"><input id="en" placeholder="Exam name" style="flex:1;min-width:150px"><input id="ed" type="date"><button class="b" data-a="addexam">Add</button></div><div class="card" id="el"></div>
+<div class="grid2"><div class="card"><h3>Study plan</h3><p class="mu">Day by day, from your unread chapters</p><div class="row"><select id="pex"></select><label>Hours a day <input id="ph" type="number" min="1" max="12" value="3" style="width:70px"></label><select id="ptg"><option value="2">Pass comfortably</option><option value="3" selected>80% or more</option><option value="4">A+ (90% or more)</option></select></div><button class="b" style="margin-top:10px" data-a="plan">Make my plan</button><div id="plan"></div></div>
+<div class="card"><h3>Practice paper</h3><p class="mu">Board pattern, MCQs marked as you go</p><div class="row"><select id="qs"></select><select id="qc"><option value="read">Chapters I’ve read</option><option value="weak">My weak chapters</option><option value="all">Whole book</option></select><select id="qt"><option>Quick test · 40 min</option><option>Full paper · 2.5 hours</option></select></div><button class="b" style="margin-top:10px" data-a="paper">Make my paper</button><div class="out" id="pp"></div></div></div>
+<div class="card" id="entry"><span class="eb">MDCAT · ECAT</span><h3>Entry tests, <em>mapped out.</em></h3><p class="mu">Your FSc chapters ticked off against the test, plus practice MCQs from Study Buddy. Check each test’s official notice for the latest paper pattern.</p>
+<div class="row"><label>Test date <input id="edt" type="date"></label><span id="edl"></span><button class="b g" data-a="mock">Mock paper timer</button><button class="b" data-a="mcq">Practice MCQs</button></div><div id="entb" style="margin-top:12px"></div></div></section>
+
+<section class="sec" id="flashcards"><span class="eb">06 · Flashcards</span><h2>Test yourself, <em>flip by flip.</em></h2><p class="sub">A few starter cards are included. Add your own from your notes. Click the card (or press Space) to flip it.</p>
+<div class="card"><div class="fc" id="fc" tabindex="0"></div><p class="mu" style="text-align:center" id="fcm"></p><div class="row" style="justify-content:center"><button class="b g" data-a="again">Again</button><button class="b" data-a="got">Got it</button></div><p class="mu" style="text-align:center" id="fcs"></p></div>
+<div class="grid2"><div class="card"><h3>New flashcard</h3><div class="row"><input id="cq" placeholder="Question" style="flex:1"><input id="ca" placeholder="Answer" style="flex:1"><button class="b" data-a="addcard">Add card</button></div></div>
+<div class="card"><h3>📒 Mistake notebook</h3><p class="mu">Cards you mark <b>Again</b> land here. Before an exam, read just this page.</p><div id="mist"></div><button class="b g s" data-a="quizmist">Quiz me on my mistakes</button></div></div></section>
+
+<section class="sec" id="calc"></section>
+
+<section class="sec" id="lab3d"></section>
+
+<section class="sec" id="progress-sec"><span class="eb">07 · Progress</span><h2>Watch the <em>hours add up.</em></h2><div class="grid" id="pst"></div>
+<div class="grid2"><div class="card"><h3>Focus minutes · last 7 days</h3><div class="chart" id="chart"></div></div><div class="card"><h3>Syllabus by subject</h3><p class="mu">Read · revised</p><div id="bysub"></div></div></div>
+<div class="card"><h3>Study streak · last 52 weeks</h3><div class="heat" id="heat"></div><p class="mu">Less → More</p></div>
+<div class="grid2"><div class="card"><h3>🔮 Marks predictor</h3><p class="mu">A rough estimate, not a promise</p><div id="pred"></div></div><div class="card"><h3>🏅 Badges</h3><div class="grid" id="badges" style="grid-template-columns:repeat(auto-fit,minmax(90px,1fr))"></div></div></div></section>
+
+<section class="sec" id="buddy"><span class="eb">08 · AI Study Buddy</span><h2>Stuck? <em>Just ask.</em></h2><p class="sub">Your AI tutor for the PTB and FBISE syllabus: simple explanations, numericals step by step, and board-style practice questions. In English, Roman Urdu or Urdu.</p>
+<div class="card"><div class="row"><select id="bl"><option>English</option><option>Roman Urdu</option><option>Urdu</option></select></div><div class="msgs" id="msgs"></div>
+<div class="row" id="chips"></div><div class="tabs" style="margin-top:10px" id="bm"></div>
+<div class="row"><input id="bi" placeholder="Ask a question" style="flex:1;min-width:160px"><button class="b" data-a="ask">Ask</button></div><p class="mu">Study Buddy can make mistakes. Check important answers against your textbook.</p></div>
+<div class="grid2"><div class="card"><h3>📝 Paper checker</h3><p class="mu">Your answer, marked like a board examiner would</p><input id="pq" placeholder="Question" style="width:100%;margin-bottom:8px"><textarea id="pa" placeholder="Type your answer"></textarea><div class="row" style="margin-top:8px"><select id="pm"><option>2</option><option>3</option><option>4</option><option selected>5</option><option>8</option></select><button class="b" data-a="check">Check my answer</button></div><div class="out" id="pc"></div></div>
+<div class="card"><h3>🧮 Quick calculator</h3><p class="mu">Check numerical working, no internet needed. Use + − * / ^ and brackets.</p><div class="row"><input id="fx" placeholder="e.g. (20-0)/5" style="flex:1"><button class="b" data-a="calc">Solve</button></div><div class="out" id="fr"></div></div></div></section>
+
+<section class="sec" id="get-app"><span class="eb">09 · Get the app</span><h2>Take it <em>everywhere.</em></h2><p class="sub">Add StudyNest to your Home Screen so it opens in its own window with its own icon. Your planner is saved in this browser.</p>
+<div class="grid2"><div class="card"><h3>Android</h3><ol><li>Open this page in Chrome.</li><li>Tap the ⋮ menu.</li><li>Choose <b>Add to Home screen</b> or <b>Install app</b>.</li></ol></div>
+<div class="card"><h3>iPhone &amp; iPad</h3><ol><li>Open this page in <b>Safari</b>.</li><li>Tap the <b>Share</b> button.</li><li>Choose <b>Add to Home Screen</b>, then <b>Add</b>.</li></ol></div>
+<div class="card"><h3>Windows / Mac</h3><ol><li>Open this page in Chrome or Edge.</li><li>Click the install icon in the address bar.</li><li>Choose <b>Install</b>.</li></ol></div></div></section>
+</main>
+<footer><a class="logo" href="#top">Study<em>Nest</em></a><p class="mu">Keep going.</p><p class="mu" style="font-size:12px">StudyNest counts anonymous visits (country, city, device and browser only). If you sign up, your email and planner data are stored so they can sync between your devices.</p>
+<div class="row" style="justify-content:center"><button class="b g s" data-a="theme" data-v="light">Light</button><button class="b g s" data-a="theme" data-v="dark">Dark</button><button class="b g s" data-a="theme" data-v="amoled">AMOLED</button><button class="b g s" data-a="pal" data-v="indigo">Indigo &amp; gold</button><button class="b g s" data-a="pal" data-v="emerald">Emerald</button></div>
+<div class="row" style="justify-content:center;margin-top:10px"><button class="b g s" data-a="export">Export backup</button><button class="b g s" data-a="import">Import backup</button><button class="b g s" data-a="sample">Load sample data</button><button class="b g s" data-a="clear">Clear everything</button></div>
+<textarea id="bk" style="display:none;max-width:560px;margin-top:10px" placeholder="Backup text appears here. Paste a backup here and press Import again to restore."></textarea></footer>
+<nav class="tab"><a href="#top"><b>🏠</b>Today</a><a href="#syllabus"><b>📖</b>Syllabus</a><a href="#focus"><b>⏱️</b>Focus</a><a href="#tasks"><b>✅</b>Tasks</a><a href="#buddy"><b>✨</b>AI</a></nav>
+<div id="wz" hidden></div>
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const D=d=>d.toISOString().slice(0,10),today=()=>D(new Date());
+const DEF={setup:0,board:'Punjab Board',cls:'9th',group:'',subjects:{},prog:{},tasks:[],tt:[],exams:[],cards:[],log:{},sess:[],goal:120,fm:25,sm:5,lm:15,theme:'',mist:[],entry:'',ci:0,got:0,again:0};
+let S;try{S=Object.assign({},DEF,JSON.parse(localStorage.getItem('studynest2')||'{}'))}catch(e){S=JSON.parse(JSON.stringify(DEF))}
+const save=()=>{try{localStorage.setItem('studynest2',JSON.stringify(S))}catch(e){}window.cloudSave&&window.cloudSave()};
+const mins=d=>S.log[d]||0,pct=(a,b)=>b?Math.round(a/b*100):0,bar=p=>`<div class="bar"><i style="width:${p}%"></i></div>`;
+const PHYS9=["Physical Quantities and Measurement","Kinematics","Dynamics","Turning Effect of Forces","Gravitation","Work and Energy","Properties of Matter","Thermal Properties of Matter","Transfer of Heat"];
+const GROUPS={low:{'Science (Biology)':['Physics','Chemistry','Biology','Mathematics'],'Science (Computer)':['Physics','Chemistry','Computer Science','Mathematics'],'General':['General Science','General Mathematics','Civics']},high:{'Pre-Medical':['Physics','Chemistry','Biology'],'Pre-Engineering':['Physics','Chemistry','Mathematics'],'ICS':['Physics','Mathematics','Computer Science'],'Commerce / Arts':['Accounting','Economics','Business Maths']}};
+const COMMON=['English','Urdu','Islamiat','Tarjama-tul-Quran'];
+const isHigh=()=>S.cls==='11th'||S.cls==='12th';
+const buildSubjects=()=>{const o={};[...(GROUPS[isHigh()?'high':'low'][S.group]||[]),...COMMON].forEach(s=>{o[s]=(s==='Physics'&&S.cls==='9th')?PHYS9.slice():Array.from({length:8},(_,i)=>'Chapter '+(i+1))});S.subjects=o};
+const chs=()=>Object.values(S.subjects).reduce((a,c)=>a+c.length,0);
+const readN=(s)=>(S.subjects[s]||[]).filter((_,i)=>S.prog[s+'|'+i]?.read).length;
+const revN=(s)=>(S.subjects[s]||[]).filter((_,i)=>S.prog[s+'|'+i]?.rev).length;
+const allRead=()=>Object.keys(S.subjects).reduce((a,s)=>a+readN(s),0),allRev=()=>Object.keys(S.subjects).reduce((a,s)=>a+revN(s),0);
+function streak(){let n=0,d=new Date();for(;;){if(mins(D(d))>0)n++;else if(D(d)!==today())break;d.setDate(d.getDate()-1)}return n}
+const daysTo=x=>Math.ceil((new Date(x)-new Date(today()))/864e5);
+const nextExam=()=>S.exams.filter(e=>e.date>=today()).sort((a,b)=>a.date.localeCompare(b.date))[0];
+const DAYS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+const dayIdx=()=>(new Date().getDay()+6)%7;
+// ---------- render ----------
+function head(){$('#hello').innerHTML=(S.name?'Hi '+esc(S.name)+', ':'Good day, ')+'<em>let’s get studying.</em>';const ne=nextExam(),n=new Date(),hm=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
+const cur=S.tt.find(b=>b.d===dayIdx()&&b.a<=hm&&hm<b.b);
+$('#nowline').innerHTML=`<span class="pill">Now: ${cur?esc(cur.n):'free time'}</span><span class="pill">Next exam: ${ne?esc(ne.name)+' in '+daysTo(ne.date)+' days':'none yet'}</span>`;
+$('#stats').innerHTML=`<div class="card stat"><b>${mins(today())}</b>minutes focused today</div><div class="card stat"><b>${S.tasks.filter(t=>t.done&&t.on===today()).length}</b>tasks done today</div><div class="card stat"><b>${streak()}</b>day study streak</div><div class="card stat"><b>${ne?daysTo(ne.date):'–'}</b>days to next exam</div>`}
+function syl(){$('#sylpct').textContent=pct(allRead(),chs())+'%';
+$('#sylabs').innerHTML=Object.entries(S.subjects).map(([s,c])=>`<div class="card"><div class="row sp"><h3>${esc(s)}</h3><span class="mu">${readN(s)}/${c.length} read · ${revN(s)} revised</span></div>${bar(pct(readN(s),c.length))}
+${c.map((x,i)=>{const p=S.prog[s+'|'+i]||{};return`<div class="item"><span>${esc(x)}</span><label><input type="checkbox" data-s="${esc(s)}" data-i="${i}" data-k="read" ${p.read?'checked':''}> Read</label><label><input type="checkbox" data-s="${esc(s)}" data-i="${i}" data-k="rev" ${p.rev?'checked':''}> Revised</label><button class="b g s" data-a="plan1" data-s="${esc(s)}" data-i="${i}">Plan</button></div>`}).join('')}
+<div class="row" style="margin-top:8px"><button class="b g s" data-a="editch" data-s="${esc(s)}">Edit chapters</button></div></div>`).join('')||'<div class="card">Choose your class to set up your subjects.<br><button class="b" style="margin-top:8px" data-a="class">Choose class</button></div>'}
+const subOpts=()=>Object.keys(S.subjects).map(s=>`<option>${esc(s)}</option>`).join('');
+function foc(){$('#fsub').innerHTML=subOpts()+'<option>Other</option>';document.querySelectorAll('[data-set]').forEach(i=>i.value=S[i.dataset.set]);
+const t=S.sess.filter(x=>x.d===today());$('#sess').innerHTML=t.map(x=>`<div class="item"><span>${esc(x.sub)}</span><b>${x.min} min</b></div>`).join('')||'<p class="mu">No sessions yet today. <span id="sc"></span></p>'}
+function tsk(){const done=S.tasks.filter(t=>t.done).length;$('#tcount').textContent=done+' of '+S.tasks.length+' done';
+$('#tfs').innerHTML=[['all','All'],['due','Due today'],['todo','To do'],['done','Done']].map(([k,l])=>`<button class="b s ${tf===k?'':'g'}" data-a="tf" data-v="${k}">${l}</button>`).join('');
+const rank={High:0,Medium:1,Low:2};
+const L=S.tasks.map((t,i)=>({...t,i})).filter(t=>tf==='all'||(tf==='todo'&&!t.done)||(tf==='done'&&t.done)||(tf==='due'&&t.due===today())).sort((a,b)=>rank[a.p]-rank[b.p]);
+$('#tl').innerHTML=L.map(t=>`<div class="item ${t.done?'done':''}"><input type="checkbox" data-t="${t.i}" ${t.done?'checked':''}><span>${esc(t.text)} <small class="mu">${t.p}${t.due?' · due '+t.due:''}</small></span><button class="x" data-a="deltask" data-i="${t.i}" aria-label="Delete">×</button></div>`).join('')||'<p class="mu">Nothing here yet.</p>'}
+let tf='all';
+function ttb(){$('#td').innerHTML=DAYS.map((d,i)=>`<option value="${i}">${d}</option>`).join('');
+$('#city').innerHTML=['Lahore','Karachi','Islamabad','Rawalpindi','Faisalabad','Multan','Gujranwala','Sialkot','Bahawalpur','Sargodha','Peshawar','Quetta','Hyderabad'].map(c=>`<option>${c}</option>`).join('');
+const n=new Date(),hm=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
+$('#week').innerHTML=DAYS.map((d,i)=>`<div class="card"><b>${d}</b>${S.tt.map((b,j)=>({...b,j})).filter(b=>b.d===i).sort((a,b)=>a.a.localeCompare(b.a)).map(b=>`<div class="item ${i===dayIdx()&&b.a<=hm&&hm<b.b?'now':''}"><span><small class="mu">${b.a}${b.b!==b.a?'–'+b.b:''}</small><br>${esc(b.n)}</span><button class="x" data-a="delblock" data-i="${b.j}" aria-label="Delete">×</button></div>`).join('')||'<div class="mu">Free</div>'}</div>`).join('')}
+function exm(){const ex=S.exams.map((e,i)=>({...e,i})).sort((a,b)=>a.date.localeCompare(b.date));
+$('#el').innerHTML=ex.map(e=>{const d=daysTo(e.date);return`<div class="item"><span>${esc(e.name)}<br><small class="mu">${e.date}</small></span><b style="color:${d<0?'var(--mu)':d<7?'var(--wr)':'var(--ac)'}">${d<0?'Done':d+' days'}</b><button class="x" data-a="delexam" data-i="${e.i}" aria-label="Delete">×</button></div>`}).join('')||'<p class="mu">No exams yet. Add a date to start the countdown.</p>';
+$('#pex').innerHTML=ex.filter(e=>e.date>=today()).map(e=>`<option value="${e.i}">${esc(e.name)}</option>`).join('')||'<option value="">Add an exam first</option>';
+$('#qs').innerHTML=subOpts();$('#edt').value=S.entry;
+const d=S.entry?daysTo(S.entry):null;$('#edl').innerHTML=d===null?'':`<b>${d<0?'Test passed':d+' days to go'}</b>`;
+const fsc=['Physics','Chemistry','Biology','Mathematics','English'].filter(s=>S.subjects[s]);
+$('#entb').innerHTML=fsc.map(s=>`<p style="margin:.4em 0 .2em">${s} <span class="mu">${readN(s)}/${S.subjects[s].length} chapters read</span></p>${bar(pct(readN(s),S.subjects[s].length))}`).join('')||'<p class="mu">Pick an Inter class and group to see your FSc chapters here.</p>'}
+const STARTER=[['SI unit of force?','Newton (N)'],['Powerhouse of the cell?','Mitochondria'],['Chemical formula of table salt?','NaCl'],['Speed formula?','Speed = distance ÷ time'],['Process by which plants make food?','Photosynthesis'],['Formula for density?','Density = mass ÷ volume']];
+let flip=false;
+function fcards(){if(!S.cards.length)S.cards=STARTER.map(([q,a])=>({q,a}));const c=S.cards[S.ci%S.cards.length];
+$('#fc').textContent=flip?c.a:c.q;$('#fcm').textContent=(flip?'Answer':'Tap to reveal answer')+' · card '+(S.ci%S.cards.length+1)+' of '+S.cards.length;$('#fcs').textContent='Again '+S.again+' / '+S.got+' Got it';
+$('#mist').innerHTML=S.mist.map((m,i)=>`<div class="item"><span><b>${esc(m.q)}</b><br>${esc(m.a)}</span><button class="x" data-a="delmist" data-i="${i}" aria-label="Remove">×</button></div>`).join('')||'<p class="mu">No mistakes saved yet.</p>'}
+function prog(){const ds=[...Array(7)].map((_,i)=>{const d=new Date();d.setDate(d.getDate()-6+i);return[D(d),d.toLocaleDateString('en',{weekday:'short'})]});
+const tot=ds.reduce((a,[k])=>a+mins(k),0),ses=S.sess.filter(x=>x.d>=ds[0][0]).length,mx=Math.max(30,...ds.map(([k])=>mins(k)));
+$('#pst').innerHTML=`<div class="card stat"><b>${(tot/60).toFixed(1)}</b>hours this week</div><div class="card stat"><b>${ses}</b>sessions this week</div><div class="card stat"><b>${streak()}</b>day streak</div>`;
+$('#chart').innerHTML=ds.map(([k,l])=>`<div><i style="height:${mins(k)/mx*100}px"></i>${l}</div>`).join('');
+$('#bysub').innerHTML=Object.entries(S.subjects).map(([s,c])=>`<p style="margin:.5em 0 .2em">${esc(s)} <span class="mu">${readN(s)} · ${revN(s)} of ${c.length}</span></p>${bar(pct(revN(s),c.length))}`).join('')||'<p class="mu">No subjects yet.</p>';
+const h=[],st=new Date();st.setDate(st.getDate()-363);for(let i=0;i<364;i++){const m=mins(D(st));h.push(`<i class="${m>=120?'l4':m>=60?'l3':m>=30?'l2':m>0?'l1':''}" title="${D(st)}: ${m} min"></i>`);st.setDate(st.getDate()+1)}$('#heat').innerHTML=h.join('');
+const rd=pct(allRead(),chs()),rv=pct(allRev(),chs()),tm=Math.min(100,pct(tot,S.goal*7)),est=chs()?Math.round(30+.3*rd+.25*rv+.15*tm):0;
+$('#pred').innerHTML=chs()?`<b style="font:800 34px Segoe UI,sans-serif;color:var(--ac)">${Math.max(0,est-5)}–${Math.min(100,est+5)}%</b><p class="mu">Based on chapters read (${rd}%), revised (${rv}%) and study time this week (${tm}% of goal). Log more tests and sessions to sharpen it.</p>`:'<p class="mu">Set up your subjects to see an estimate.</p>';
+const tm2=Object.values(S.log).reduce((a,b)=>a+b,0);
+$('#badges').innerHTML=[['🌱','First session',S.sess.length>0],['🔥','3-day streak',streak()>=3],['⏳','10 hours',tm2>=600],['📖','Half the syllabus',chs()&&rd>=50],['🎯','Syllabus read',chs()&&rd===100],['🃏','10 cards added',S.cards.length>=10]].map(([e,n,ok])=>`<div class="badge ${ok?'':'off'}"><b>${e}</b>${n}</div>`).join('')}
+function msgsHTML(){return chat.length?chat.map(m=>`<div class="m ${m.role}">${esc(m.content).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/\n/g,'<br>')}</div>`).join(''):'<div class="m assistant"><b>Assalam-o-Alaikum!</b> I’m your Study Buddy. Ask me to explain a topic, solve a numerical step by step, or make practice MCQs for any chapter.</div>'}
+function paintChat(){const m=$('#msgs');m.innerHTML=msgsHTML();m.scrollTop=m.scrollHeight}
+function theme(){const t=S.theme||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');document.documentElement.dataset.theme=t;document.documentElement.dataset.pal=S.pal||'indigo';const k=$('#dk');if(k)k.textContent=t==='light'?'🌙':'☀️'}
+const renderAll=()=>{head();syl();foc();tsk();ttb();exm();fcards();prog();paintChat()};
+// ---------- AI ----------
+const SYS='You are Study Buddy, a patient tutor for Pakistani Matric and Inter students (Punjab Board PTB and Federal Board syllabus). Explain simply, solve numericals step by step with units, and write board-style questions when asked. Keep answers focused. If unsure, say so and tell the student to check the textbook.';
+async function aiCall(msgs,onText){const r=await fetch('/api/ai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:msgs})});if(!r.ok){let j={};try{j=await r.json()}catch(e){}throw{code:r.status===429?'rate_limited':(j.error||'err'),detail:j.detail}};const j=await r.json();onText(j.text);return j}
+const aiErr=e=>e.code==='no_key'?'Study Buddy is not switched on yet. The site owner needs to add the GEMINI_API_KEY in Vercel and redeploy.':e.code==='bad_key'?'Study Buddy cannot sign in to Google. The site owner needs to check the GEMINI_API_KEY in Vercel.':e.code==='model_unavailable'?'Study Buddy’s AI model is not available right now. The site owner can open /api/ai?test=1 to see why.':e.code==='none'?'The AI tools work when this page is opened on claude.ai.':e.code==='rate_limited'?'Too many requests right now. Wait a minute and try again.':e.code==='not_granted'?'Permission was declined, so the AI cannot answer.':'Something went wrong. Try again.';
+async function aiInto(el,prompt){el.textContent='Thinking…';try{const r=await aiCall([{role:'user',content:SYS+' Reply in '+$('#bl').value+'.\n\n'+prompt}],t=>{el.textContent=t});el.textContent=r.text}catch(e){el.textContent=aiErr(e)}}
+let chat=[],busy=false,bmode='';
+const MODES=[['💡 Explain simply','Explain simply: '],['🧮 Solve a numerical','Solve step by step: '],['📝 Practice MCQs','Make 5 practice MCQs with answers on: '],['📚 Short questions','Write 5 board-style short questions with model answers on: '],['⚖️ Difference between…','Give the difference between: ']];
+async function ask(q){q=q.trim();if(!q||busy)return;busy=true;chat.push({role:'user',content:q},{role:'assistant',content:'Thinking…'});paintChat();
+const hist=chat.slice(0,-1).slice(-9).map(m=>({role:m.role,content:m.content}));hist[hist.length-1].content=SYS+' Reply in '+$('#bl').value+'.\n\nStudent: '+bmode+q;
+try{const r=await aiCall(hist,t=>{chat[chat.length-1].content=t;paintChat()});chat[chat.length-1].content=r.text}catch(e){chat[chat.length-1].content=aiErr(e)}busy=false;paintChat()}
+// ---------- timer ----------
+let tm={mode:'Focus',len:25*60,left:25*60,run:false,end:0,id:0};
+const lens=()=>({Focus:S.fm*60,'Short break':S.sm*60,'Long break':S.lm*60,'Mock exam':180*60});
+function tmodes(){$('#modes').innerHTML=Object.keys(lens()).map(m=>`<button class="b s ${tm.mode===m?'':'g'}" data-a="mode" data-v="${m}">${m}</button>`).join('')}
+function tdraw(){$('#tt').textContent=Math.floor(tm.left/60)+':'+String(tm.left%60).padStart(2,'0');if(tm.mode==='Mock exam'){const h=Math.floor(tm.left/3600),m=Math.floor(tm.left%3600/60),s=tm.left%60;$('#tt').textContent=h+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0')}$('#tst').textContent=tm.run?(tm.mode==='Focus'?'Studying '+$('#fsub').value:tm.mode):'Ready to '+(tm.mode==='Focus'?'focus':'start');$('#go').textContent=tm.run?'Pause':'Start';document.title=tm.run?$('#tt').textContent+' · StudyNest':'StudyNest — Study Planner'}
+function tset(m){clearInterval(tm.id);tm.mode=m;tm.len=tm.left=lens()[m];tm.run=false;tmodes();tdraw()}
+function tfinish(){clearInterval(tm.id);tm.run=false;if(tm.mode==='Focus'){const k=Math.round(tm.len/60);S.log[today()]=mins(today())+k;S.sess.push({d:today(),min:k,sub:$('#fsub').value});save();renderAll()}tm.left=tm.len;tdraw();alert(tm.mode+' finished!')}
+let ac,src;function sound(t){try{if(src){src.stop();src=null}if(!t)return;ac=ac||new AudioContext();const b=ac.createBuffer(1,ac.sampleRate*2,ac.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;src=ac.createBufferSource();src.buffer=b;src.loop=true;const f=ac.createBiquadFilter();f.type=t==='white'?'allpass':'lowpass';f.frequency.value=t==='rain'?3500:400;const g=ac.createGain();g.gain.value=.12;src.connect(f);f.connect(g);g.connect(ac.destination);src.start()}catch(e){}}
+// ---------- wizard ----------
+let wz={step:0};
+const GI={'Science (Biology)':['🧬','Physics, Chemistry, Biology, Maths'],'Science (Computer)':['💻','Physics, Chemistry, Computer, Maths'],'General':['📚','General Science, General Maths, Civics'],'Pre-Medical':['🩺','Physics, Chemistry, Biology'],'Pre-Engineering':['⚙️','Physics, Chemistry, Maths'],'ICS':['🖥️','Physics, Maths, Computer Science'],'Commerce / Arts':['📊','Accounting, Economics, Business Maths']};
+function wiz(){const w=$('#wz');w.hidden=false;const st=wz.step,N=5;
+const prog=`<div class="wprog">${Array.from({length:N},(_,i)=>`<i class="${i<=st?'on':''}"></i>`).join('')}</div><p class="mu" style="text-align:center;margin:0 0 6px">Step ${st+1} of ${N}</p>`;
+const nav=(next)=>`<div class="row" style="margin-top:20px;justify-content:space-between;flex-wrap:nowrap"><button class="b g" data-a="wp">Back</button><button class="b" data-a="${next||'wn'}">Next →</button></div>`;
+let h='';
+if(st===0)h=`<div class="wart">📚</div><h2>Welcome to Study<em>Nest</em></h2><p class="sub">Your free planner for Matric and Inter. Every chapter of your books, a focus timer, tasks, timetable, exam countdowns and flashcards, all in one place.</p><div class="chips"><span>📖 Every chapter</span><span>⏱️ Focus timer</span><span>✅ Tasks</span><span>🃏 Flashcards</span><span>✨ AI tutor</span></div><button class="b" style="width:100%;padding:14px" data-a="wn">Let’s start →</button><p style="text-align:center;margin:14px 0 0"><button class="b g s" data-a="sample">Just looking? Try demo data</button></p>`;
+if(st===1)h=`<div class="wart">👋</div><h2>What should we <em>call you?</em></h2><p class="sub">Just a first name. It stays on this device and shows up in your greeting.</p><input id="wname" placeholder="Your name" value="${esc(S.name||'')}" maxlength="24" style="width:100%;padding:14px;font-size:18px;text-align:center">${nav('wn2')}`;
+if(st===2)h=`<div class="wart">🎓</div><h2>Which <em>class</em> are you in?</h2><p class="sub">We’ll set up the right books for you.</p><div class="opts2" style="margin-bottom:12px">${[['Punjab Board','🏛️','PTB books'],['Federal Board','🇵🇰','FBISE · NBF books']].map(([b,e,l])=>`<button class="opt ${S.board===b?'on':''}" data-a="wb" data-v="${b}"><span class="ic">${e}</span><b>${b}</b><small class="mu">${l}</small></button>`).join('')}</div><div class="opts2">${[['9th','Matric · Part 1'],['10th','Matric · Part 2'],['11th','Inter · 1st year'],['12th','Inter · 2nd year']].map(([c,l])=>`<button class="opt ${S.cls===c?'on':''}" data-a="wc" data-v="${c}"><b style="font:700 28px Georgia,serif">${c}</b><small class="mu">${l}</small></button>`).join('')}</div>${nav()}`;
+if(st===3){const g=Object.keys(GROUPS[isHigh()?'high':'low']);if(!g.includes(S.group))S.group=g[0];h=`<div class="wart">🧭</div><h2>Pick your <em>subject group</em></h2><p class="sub">English, Urdu, Islamiat and Tarjama-tul-Quran are added automatically.</p>${g.map(x=>`<button class="opt ${S.group===x?'on':''}" data-a="wg" data-v="${esc(x)}"><span class="ic">${GI[x][0]}</span><span style="text-align:left"><b>${x}</b><br><small class="mu">${GI[x][1]}</small></span></button>`).join('')}${nav()}`}
+if(st===4){const subs=[...(GROUPS[isHigh()?'high':'low'][S.group]||[]),...COMMON];h=`<div class="wart">🚀</div><h2>Ready${S.name?', '+esc(S.name):''}? <em>Let’s build it.</em></h2><p class="sub">${esc(S.board)} · ${S.cls} · ${esc(S.group)}</p><div class="chips">${subs.map(s=>`<span>${esc(s)}</span>`).join('')}</div><button class="b" style="width:100%;padding:14px" data-a="wdone">Generate my planner 🚀</button><p style="text-align:center;margin:12px 0 0"><button class="b g s" data-a="wp">Back</button></p>`}
+w.innerHTML=`<div class="wc">${prog}${h}</div>`}
+// ---------- actions ----------
+const A={
+class(){wz.step=2;wiz()},wn2(){S.name=($('#wname').value||'').trim();save();A.wn()},wn(){wz.step++;wiz()},wp(){wz.step--;wiz()},wb(b){S.board=b.dataset.v;wiz()},wc(b){S.cls=b.dataset.v;S.group='';wiz()},wg(b){S.group=b.dataset.v;wiz()},
+wdone(b){b.textContent='Building your planner…';b.disabled=true;setTimeout(()=>{buildSubjects();S.setup=1;save();$('#wz').hidden=true;renderAll();location.hash='syllabus'},900)},
+plan1(b){S.tasks.push({text:'Study '+S.subjects[b.dataset.s][b.dataset.i]+' ('+b.dataset.s+')',p:'Medium',done:false});save();tsk();b.textContent='Added ✓'},
+editch(b){const s=b.dataset.s,v=prompt('One chapter per line:',S.subjects[s].join('\n'));if(v!==null){S.subjects[s]=v.split('\n').map(x=>x.trim()).filter(Boolean);save();renderAll()}},
+snd(b){sound(b.dataset.v)},mode(b){tset(b.dataset.v)},
+addtask(){const v=$('#nt').value.trim();if(!v)return;S.tasks.push({text:v,p:$('#np').value,due:$('#nd').value,done:false});$('#nt').value='';save();head();tsk()},
+tf(b){tf=b.dataset.v;tsk()},deltask(b){S.tasks.splice(b.dataset.i,1);save();head();tsk()},
+addblock(){const n=$('#tn').value.trim();if(!n)return;S.tt.push({d:+$('#td').value,n,a:$('#ta').value,b:$('#tb').value});$('#tn').value='';save();ttb()},
+delblock(b){S.tt.splice(b.dataset.i,1);save();ttb()},
+namaz(){const c=$('#city').value;[['Fajr','05:00'],['Zuhr','13:00'],['Asr','16:30'],['Maghrib','18:30'],['Isha','20:00']].forEach(([n,a])=>{for(let d=0;d<7;d++)S.tt.push({d,n:'Namaz '+n+' ('+c+')',a,b:a})});save();ttb()},
+addexam(){const n=$('#en').value.trim(),d=$('#ed').value;if(n&&d){S.exams.push({name:n,date:d});$('#en').value='';save();head();exm()}},
+delexam(b){S.exams.splice(b.dataset.i,1);save();head();exm()},
+plan(){const e=S.exams[$('#pex').value];const o=$('#plan');if(!e){o.innerHTML='<p class="mu">Add an upcoming exam first.</p>';return}
+const un=[];Object.entries(S.subjects).forEach(([s,c])=>c.forEach((x,i)=>{if(!S.prog[s+'|'+i]?.read)un.push(s+': '+x)}));const days=Math.max(1,daysTo(e.date)),rev=Math.min(+$('#ptg').value,Math.floor(days/3)),study=Math.max(1,days-rev);
+if(!un.length){o.innerHTML=`<p class="mu">Everything is read. Spend the ${days} days revising and testing yourself.</p>`;return}
+const per=Math.ceil(un.length/study),n=Math.ceil(un.length/per);
+o.innerHTML=`<p class="mu">${un.length} unread chapters, about ${per} a day (${(+$('#ph').value/per).toFixed(1)} hours each)${rev?', then '+rev+' days of revision':''}.</p>`+Array.from({length:n},(_,i)=>`<div class="item"><b>Day ${i+1}</b><span>${un.slice(i*per,i*per+per).map(esc).join('; ')}</span></div>`).join('')},
+paper(){const s=$('#qs').value,sc=$('#qc').value,c=S.subjects[s]||[];const pick=sc==='all'?c:sc==='read'?c.filter((_,i)=>S.prog[s+'|'+i]?.read):c.filter((_,i)=>!S.prog[s+'|'+i]?.rev);
+aiInto($('#pp'),`Make a ${$('#qt').value} in board pattern for ${S.cls} ${s} (${S.board}). Chapters: ${(pick.length?pick:c).join(', ')||'any'}. Include MCQs with an answer key at the end.`)},
+mock(){tset('Mock exam');location.hash='focus'},
+mcq(){bmode='Make 5 practice MCQs with answers on: ';location.hash='buddy';ask('MDCAT/ECAT-style practice for my FSc '+(S.group||'subjects'))},
+again(){const c=S.cards[S.ci%S.cards.length];S.again++;if(!S.mist.some(m=>m.q===c.q))S.mist.push(c);S.ci++;flip=false;save();fcards()},
+got(){S.got++;S.ci++;flip=false;save();fcards()},
+addcard(){const q=$('#cq').value.trim(),a=$('#ca').value.trim();if(q&&a){S.cards.push({q,a});$('#cq').value=$('#ca').value='';save();fcards();prog()}},
+delmist(b){S.mist.splice(b.dataset.i,1);save();fcards()},
+quizmist(){if(!S.mist.length){alert('No mistakes saved yet.');return}location.hash='buddy';ask('Quiz me, one question at a time, on these topics I got wrong: '+S.mist.map(m=>m.q).join('; '))},
+ask(){const i=$('#bi');const v=i.value;i.value='';ask(v)},
+check(){const q=$('#pq').value.trim(),a=$('#pa').value.trim();if(!q||!a){$('#pc').textContent='Enter the question and your answer first.';return}aiInto($('#pc'),`Mark this answer like a board examiner out of ${$('#pm').value} marks. Give the marks, what earned them, what is missing, and a short model answer outline.\nQuestion: ${q}\nAnswer: ${a}`)},
+calc(){const v=$('#fx').value.trim().replace(/\^/g,'**').replace(/×/g,'*').replace(/÷/g,'/');if(!/^[0-9+\-*/().\s]+$/.test(v)){$('#fr').textContent='Use only numbers and + - * / ^ ( ).';return}try{const r=Function('"use strict";return ('+v+')')();$('#fr').textContent='= '+(Number.isFinite(r)?+r.toFixed(6):'undefined')}catch(e){$('#fr').textContent='Check the brackets and try again.'}},
+dark(){S.theme=document.documentElement.dataset.theme==='light'?'dark':'light';save();theme()},palt(){S.pal=(S.pal||'indigo')==='indigo'?'emerald':'indigo';save();theme()},pal(b){S.pal=b.dataset.v;save();theme()},
+theme(b){S.theme=b.dataset.v;save();theme()},
+export(){const t=$('#bk');t.style.display='block';t.value=JSON.stringify(S);t.select()},
+import(){const t=$('#bk');if(t.style.display==='none'||!t.value.trim()){t.style.display='block';t.value='';t.focus();return}try{S=Object.assign({},DEF,JSON.parse(t.value));save();t.style.display='none';theme();renderAll()}catch(e){alert('That backup text is not valid.')}},
+sample(){S.cls='9th';S.board='Punjab Board';S.group='Science (Biology)';buildSubjects();S.setup=1;for(let i=0;i<30;i++){const d=new Date();d.setDate(d.getDate()-i);if(i<5||Math.random()<.5){const m=[25,50,75,120][Math.floor(Math.random()*4)];S.log[D(d)]=m;S.sess.push({d:D(d),min:m,sub:'Physics'})}}PHYS9.slice(0,4).forEach((_,i)=>S.prog['Physics|'+i]={read:true,rev:i<2});save();$('#wz').hidden=true;renderAll()},
+clear(){if(confirm('Clear all your StudyNest data on this device?')){S=JSON.parse(JSON.stringify(DEF));save();renderAll();wz.step=0;wiz()}}};
+document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(b&&A[b.dataset.a])A[b.dataset.a](b)});
+document.addEventListener('change',e=>{const t=e.target;
+if(t.dataset.k){const k=t.dataset.s+'|'+t.dataset.i;S.prog[k]=S.prog[k]||{};S.prog[k][t.dataset.k]=t.checked;save();head();syl();prog();exm()}
+else if(t.dataset.t){const k=S.tasks[t.dataset.t];k.done=t.checked;k.on=t.checked?today():null;save();head();tsk()}
+else if(t.dataset.set){S[t.dataset.set]=Math.max(1,+t.value||1);save();if(!tm.run)tset(tm.mode)}
+else if(t.id==='edt'){S.entry=t.value;save();exm()}});
+$('#go').onclick=()=>{if(tm.run){clearInterval(tm.id);tm.run=false;tdraw();return}tm.run=true;tm.end=Date.now()+tm.left*1000;tm.id=setInterval(()=>{tm.left=Math.max(0,Math.round((tm.end-Date.now())/1000));tdraw();if(tm.left<=0)tfinish()},250);tdraw()};
+$('#rs').onclick=()=>tset(tm.mode);
+$('#fc').onclick=()=>{flip=!flip;fcards()};
+$('#fc').onkeydown=e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();flip=!flip;fcards()}};
+$('#bi').onkeydown=e=>{if(e.key==='Enter')A.ask()};
+$('#chips').innerHTML=['What is Newton’s second law?','5 MCQs on chemical bonding','Mitosis vs meiosis'].map(q=>`<button class="b g s" data-a="chip" data-q="${esc(q)}">${esc(q)}</button>`).join('');
+A.chip=b=>{bmode='';ask(b.dataset.q)};
+$('#bm').innerHTML=MODES.map(([l,p])=>`<button class="b g s" data-a="bmode" data-p="${esc(p)}">${l}</button>`).join('');
+A.bmode=b=>{bmode=b.dataset.p;$('#bi').focus();$('#bi').placeholder=b.textContent+' — type your topic'};
+theme();tmodes();tdraw();renderAll();if(!S.setup){wz.step=0;wiz()}
+</script>
+<script src="auth.js" defer></script>
+<script src="calc.js" defer></script>
+<script src="lab3d.js" defer></script>
+<script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments)}</script>
+<script defer src="/_vercel/insights/script.js"></script>
+<script>
+(()=>{try{const q=location.search;if(q.includes('owner=1'))localStorage.setItem('sn_owner','1');if(q.includes('owner=0'))localStorage.removeItem('sn_owner');
+if(localStorage.getItem('sn_owner')||location.hostname==='localhost'||location.protocol==='file:')return;
+const l=+localStorage.getItem('sn_ping')||0;if(Date.now()-l<6*36e5)return;const n=!localStorage.getItem('sn_seen');let vid=localStorage.getItem('sn_vid');if(!vid){vid=(crypto.randomUUID?crypto.randomUUID():String(Math.random()).slice(2)+Date.now());localStorage.setItem('sn_vid',vid)}localStorage.setItem('sn_ping',Date.now());localStorage.setItem('sn_seen','1');
+let c='';try{c=JSON.parse(localStorage.getItem('studynest2')||'{}').cls||''}catch(e){}
+fetch('/api/notify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({n,vid,r:document.referrer,c}),keepalive:true}).catch(()=>{})}catch(e){}})();
+</script>
+</body>
+</html>
