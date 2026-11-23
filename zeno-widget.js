@@ -189,24 +189,29 @@
   let recognition = null;
   let history = [];
 
-  // -------------------------------
-  // LANGUAGE SETTINGS
-  // -------------------------------
+  // --------------------------------
+  // LANGUAGE DETECTION
+  // --------------------------------
 
   const selectedLanguage = () => $("zeno-language").value;
 
   function detectSpeechLanguage(text) {
-    if (selectedLanguage() !== "auto") {
-      return selectedLanguage();
-    }
+    const selected = selectedLanguage();
 
-    // Detect common writing systems.
+    if (selected !== "auto") return selected;
+
+    // Urdu-specific characters
     if (/[ٹڈڑںھہچژگپے]/.test(text)) return "ur-PK";
+
+    // Other writing systems
     if (/[\u0900-\u097F]/.test(text)) return "hi-IN";
     if (/[\u4e00-\u9fff]/.test(text)) return "zh-CN";
     if (/[\u3040-\u30ff]/.test(text)) return "ja-JP";
     if (/[\uac00-\ud7af]/.test(text)) return "ko-KR";
-    if (/[\u0600-\u06FF]/.test(text)) return "ar-SA";
+
+    if (/[\u0600-\u06FF]/.test(text)) {
+      return "ar-SA";
+    }
 
     return navigator.language || "en-US";
   }
@@ -221,9 +226,9 @@
     return el;
   }
 
-  // -------------------------------
-  // NATURALER VOICE SELECTION
-  // -------------------------------
+  // --------------------------------
+  // VOICE
+  // --------------------------------
 
   function speak(text) {
     if (!speakingEnabled || !("speechSynthesis" in window)) return;
@@ -231,34 +236,38 @@
     window.speechSynthesis.cancel();
 
     const lang = detectSpeechLanguage(text);
-    const utterance = new SpeechSynthesisUtterance(text);
-
-    utterance.lang = lang;
-    utterance.rate = 0.96;
-    utterance.pitch = 1.2;
-
-    const voices = window.speechSynthesis.getVoices();
     const prefix = lang.split("-")[0].toLowerCase();
+    const voices = window.speechSynthesis.getVoices();
 
     const matchingVoices = voices.filter(v =>
       v.lang.toLowerCase().startsWith(prefix)
     );
 
-    // Prefer Pakistani Urdu voices when available.
     let match = null;
 
     if (prefix === "ur") {
+      // Never use a Hindi voice as an Urdu replacement.
       match =
-        matchingVoices.find(v => /pakistan|pakistani/i.test(v.name)) ||
-        matchingVoices.find(v => /ur-pk/i.test(v.lang));
-    }
+        matchingVoices.find(v => /ur-pk/i.test(v.lang)) ||
+        matchingVoices.find(v => /urdu|pakistan/i.test(v.name));
 
-    if (!match) {
+      if (!match) {
+        status.textContent =
+          "Urdu answer is ready. This device has no Urdu speech voice available.";
+        return;
+      }
+    } else {
       match =
         matchingVoices.find(v => /natural|neural|premium/i.test(v.name)) ||
         matchingVoices.find(v => !/compact|novelty/i.test(v.name)) ||
         matchingVoices[0];
     }
+
+    const utterance = new SpeechSynthesisUtterance(text);
+
+    utterance.lang = lang;
+    utterance.rate = 0.96;
+    utterance.pitch = 1.2;
 
     if (match) utterance.voice = match;
 
@@ -277,9 +286,9 @@
     window.speechSynthesis.speak(utterance);
   }
 
-  // -------------------------------
+  // --------------------------------
   // AI CHAT
-  // -------------------------------
+  // --------------------------------
 
   async function askZeno(question) {
     if (!question.trim() || busy) return;
@@ -292,23 +301,27 @@
     status.textContent = "ZENO is thinking...";
 
     const languageCode = selectedLanguage();
+
     const languageName =
-      languages.find(x => x[1] === languageCode)?.[0] || "the student's language";
+      languages.find(x => x[1] === languageCode)?.[0] ||
+      "the student's language";
 
     let languageInstruction;
 
     if (languageCode === "ur-PK") {
       languageInstruction =
-        "Reply in natural, fluent Pakistani Urdu using Urdu script. " +
-        "Always address the student respectfully using آپ, not تم or تو. " +
-        "Use everyday Pakistani Urdu expressions and natural sentence structure. " +
-        "Avoid awkward literal translations, overly formal wording, and unnecessary Hindi vocabulary. " +
-        "If a technical English term is commonly used in Pakistan, you may keep that term in English.";
+        "IMPORTANT LANGUAGE RULE: The student selected Urdu. " +
+        "Reply ONLY in natural Pakistani Urdu using Urdu script. " +
+        "Do NOT write in Hindi, Devanagari script, or Indian Hindi vocabulary. " +
+        "Use respectful آپ, never تم or تو. " +
+        "Use natural everyday Pakistani Urdu. Keep common technical terms in English when appropriate. " +
+        "Do not translate the answer into Hindi.";
     } else if (languageCode === "auto") {
       languageInstruction =
         "Detect the language of the student's latest message and reply in that same language. " +
-        "If the student writes Urdu, reply in natural Pakistani Urdu using Urdu script. " +
-        "Use respectful آپ when speaking Urdu. Do not switch to Hindi unless the student uses Hindi.";
+        "If the student writes Urdu, reply in Pakistani Urdu using Urdu script, not Hindi or Devanagari. " +
+        "Use respectful آپ when speaking Urdu. " +
+        "Do not switch to Hindi unless the student writes in Hindi.";
     } else {
       languageInstruction =
         "Reply naturally in " + languageName +
@@ -350,7 +363,11 @@
       addMessage(answer, "bot");
       speak(answer);
 
-      status.textContent = "Ready for your next question";
+      if (!(languageCode === "ur-PK" && !window.speechSynthesis.getVoices().some(v =>
+        v.lang.toLowerCase().startsWith("ur")
+      ))) {
+        status.textContent = "Ready for your next question";
+      }
     } catch (error) {
       history.pop();
 
@@ -367,9 +384,21 @@
     }
   }
 
-  // -------------------------------
-  // PANEL OPEN / CLOSE
-  // -------------------------------
+  // --------------------------------
+  // PANEL CONTROLS
+  // --------------------------------
+
+  function closePanel() {
+    panel.classList.remove("open");
+
+    if ("speechSynthesis" in window) {
+      window.speechSynthesis.cancel();
+    }
+    if (recognition) {
+      recognition.stop();
+      recognition = null;
+    }
+  }
 
   launcher.addEventListener("click", () => {
     panel.classList.toggle("open");
@@ -377,25 +406,16 @@
     if (panel.classList.contains("open")) {
       input.focus();
 
-      // Important: initialize the robot AFTER the panel is visible.
       requestAnimationFrame(() => {
         loadRobot();
         resizeRobot();
       });
     } else {
-      if ("speechSynthesis" in window) {
-        window.speechSynthesis.cancel();
-      }
+      closePanel();
     }
   });
 
-  $("zeno-close").addEventListener("click", () => {
-    panel.classList.remove("open");
-
-    if ("speechSynthesis" in window) {
-      window.speechSynthesis.cancel();
-    }
-  });
+  $("zeno-close").addEventListener("click", closePanel);
 
   $("zeno-send").addEventListener("click", () => {
     askZeno(input.value);
@@ -414,9 +434,9 @@
     }
   });
 
-  // -------------------------------
+  // --------------------------------
   // MICROPHONE
-  // -------------------------------
+  // --------------------------------
 
   const SpeechRecognition =
     window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -432,6 +452,7 @@
 
     recognition = new SpeechRecognition();
 
+    // For Urdu voice input, select Urdu in the language menu.
     recognition.lang =
       selectedLanguage() === "auto"
         ? (navigator.language || "en-US")
@@ -467,9 +488,9 @@
     }
   });
 
-  // -------------------------------
+  // --------------------------------
   // THREE.JS ROBOT
-  // -------------------------------
+  // --------------------------------
 
   let robotLoading = false;
   let robotInitialized = false;
@@ -481,10 +502,15 @@
   let robotMouth = null;
   let robotEyes = [];
   let robotArms = [];
+  let robotLegs = [];
+  let robotFeet = [];
   let robotFrame = 0;
   let lastBlink = 0;
   let blinking = false;
   let blinkTime = 0;
+  let lastWave = 0;
+  let waving = false;
+  let waveStart = 0;
 
   function loadRobot() {
     if (robotInitialized || robotLoading) return;
@@ -535,7 +561,6 @@
     const width = stage.clientWidth;
     const height = stage.clientHeight;
 
-    // Wait until the visible panel has real dimensions.
     if (!width || !height) {
       requestAnimationFrame(createRobot);
       return;
@@ -546,10 +571,7 @@
     robotScene = new THREE.Scene();
 
     robotCamera = new THREE.PerspectiveCamera(
-      35,
-      width / height,
-      0.1,
-      100
+      35, width / height, 0.1, 100
     );
 
     robotCamera.position.set(0, 0, 7.2);
@@ -566,7 +588,6 @@
 
     robotRenderer.setSize(width, height);
     stage.appendChild(robotRenderer.domElement);
-
     $("zeno-fallback").style.display = "none";
 
     // Lighting
@@ -629,100 +650,36 @@
       return mesh;
     }
 
-    // Torso
-    sphere(
-      robotObject, blue,
-      0, -0.65, 0,
-      0.58, 0.68, 0.38
-    );
+    // Body
+    sphere(robotObject, blue, 0, -0.65, 0, 0.58, 0.68, 0.38);
 
-    // Chest display
-    sphere(
-      robotObject, dark,
-      0, -0.58, 0.36,
-      0.34, 0.25, 0.08
-    );
+    sphere(robotObject, dark, 0, -0.58, 0.36, 0.34, 0.25, 0.08);
+    sphere(robotObject, glow, 0, -0.58, 0.445, 0.12, 0.08, 0.025);
 
-    sphere(
-      robotObject, glow,
-      0, -0.58, 0.445,
-      0.12, 0.08, 0.025
-    );
-
-    // Neck
-    cylinder(
-      robotObject, dark,
-      0, 0.05, 0,
-      0.13, 0.13, 0.2
-    );
+    cylinder(robotObject, dark, 0, 0.05, 0, 0.13, 0.13, 0.2);
 
     // Head
     robotHead = new THREE.Group();
     robotHead.position.set(0, 0.65, 0);
     robotObject.add(robotHead);
 
-    sphere(
-      robotHead, blue,
-      0, 0, 0,
-      0.73, 0.59, 0.53
-    );
+    sphere(robotHead, blue, 0, 0, 0, 0.73, 0.59, 0.53);
+    sphere(robotHead, dark, 0, -0.02, 0.43, 0.62, 0.39, 0.17);
 
-    // Face screen
-    sphere(
-      robotHead, dark,
-      0, -0.02, 0.43,
-      0.62, 0.39, 0.17
-    );
+    sphere(robotHead, white, -0.23, 0.04, 0.57, 0.14, 0.16, 0.045);
+    sphere(robotHead, white, 0.23, 0.04, 0.57, 0.14, 0.16, 0.045);
 
-    // Eye sockets
-    sphere(
-      robotHead, white,
-      -0.23, 0.04, 0.57,
-      0.14, 0.16, 0.045
-    );
-
-    sphere(
-      robotHead, white,
-      0.23, 0.04, 0.57,
-      0.14, 0.16, 0.045
-    );
-
-    // Glowing eyes
-    const leftEye = sphere(
-      robotHead, glow,
-      -0.23, 0.04, 0.61,
-      0.085, 0.105, 0.04
-    );
-
-    const rightEye = sphere(
-      robotHead, glow,
-      0.23, 0.04, 0.61,
-      0.085, 0.105, 0.04
-    );
-
+    const leftEye = sphere(robotHead, glow, -0.23, 0.04, 0.61, 0.085, 0.105, 0.04);
+    const rightEye = sphere(robotHead, glow, 0.23, 0.04, 0.61, 0.085, 0.105, 0.04);
     robotEyes = [leftEye, rightEye];
 
-    // Mouth
-    robotMouth = sphere(
-      robotHead, glow,
-      0, -0.23, 0.61,
-      0.15, 0.025, 0.035
-    );
+    robotMouth = sphere(robotHead, glow, 0, -0.23, 0.61, 0.15, 0.025, 0.035);
 
     // Antenna
-    cylinder(
-      robotHead, blue,
-      0, 0.67, 0,
-      0.025, 0.025, 0.23
-    );
+    cylinder(robotHead, blue, 0, 0.67, 0, 0.025, 0.025, 0.23);
+    sphere(robotHead, glow, 0, 0.8, 0, 0.09, 0.09, 0.09);
 
-    sphere(
-      robotHead, glow,
-      0, 0.8, 0,
-      0.09, 0.09, 0.09
-    );
-
-    // Shoulders and arms
+    // Arms with shoulder pivots
     robotArms = [];
 
     [-1, 1].forEach(side => {
@@ -730,45 +687,36 @@
       arm.position.set(side * 0.55, -0.38, 0);
       robotObject.add(arm);
 
-      sphere(
-        arm, dark,
-        0, -0.06, 0,
-        0.19, 0.19, 0.19
-      );
-
-      cylinder(
-        arm, blue,
-        side * 0.05, -0.27, 0,
-        0.13, 0.15, 0.35
-      );
-
-      sphere(
-        arm, white,
-        side * 0.05, -0.48, 0,
-        0.16, 0.15, 0.16
-      );
+      sphere(arm, dark, 0, -0.06, 0, 0.19, 0.19, 0.19);
+      cylinder(arm, blue, side * 0.05, -0.27, 0, 0.13, 0.15, 0.35);
+      sphere(arm, white, side * 0.05, -0.48, 0, 0.16, 0.15, 0.16);
 
       robotArms.push(arm);
     });
 
-    // Legs and feet
-    [-1, 1].forEach(side => {
-      cylinder(
-        robotObject, dark,
-        side * 0.25, -1.22, 0,
-        0.16, 0.19, 0.42
-      );
+    // Moving legs
+    robotLegs = [];
+    robotFeet = [];
 
-      sphere(
-        robotObject, blue,
-        side * 0.25, -1.48, 0.12,
-        0.23, 0.12, 0.32
-      );
+    [-1, 1].forEach(side => {
+      const leg = new THREE.Group();
+      leg.position.set(side * 0.25, -1.02, 0);
+      robotObject.add(leg);
+
+      cylinder(leg, dark, 0, -0.22, 0, 0.16, 0.19, 0.42);
+
+      const foot = new THREE.Group();
+      foot.position.set(0, -0.45, 0.12);
+      leg.add(foot);
+
+      sphere(foot, blue, 0, 0, 0, 0.23, 0.12, 0.32);
+
+      robotLegs.push(leg);
+      robotFeet.push(foot);
     });
 
     robotInitialized = true;
 
-    // Keep the canvas fitted to the stage.
     if ("ResizeObserver" in window) {
       const observer = new ResizeObserver(resizeRobot);
       observer.observe(stage);
@@ -776,35 +724,84 @@
 
     window.addEventListener("resize", resizeRobot);
 
+    // --------------------------------
+    // ROBOT ANIMATION
+    // --------------------------------
+
     function animate() {
       requestAnimationFrame(animate);
 
       robotFrame += 0.025;
 
-      // Floating body movement
+      const now = Date.now();
+      const time = robotFrame;
+
+      const isSpeaking =
+        window.speechSynthesis &&
+        window.speechSynthesis.speaking;
+
+      // Gentle walking-in-place movement
+      const walk = Math.sin(time * 2.6);
+
       robotObject.position.y =
-        Math.sin(robotFrame * 1.5) * 0.055;
+        Math.abs(Math.sin(time * 2.6)) * 0.045 +
+        Math.sin(time * 1.2) * 0.025;
 
       robotObject.rotation.y =
-        Math.sin(robotFrame * 0.6) * 0.12;
+        Math.sin(time * 0.6) * 0.10;
 
-      // Head movement
-      robotHead.rotation.z =
-        Math.sin(robotFrame) * 0.025;
+      // Legs alternate as the robot walks
+      robotLegs[0].rotation.x = walk * 0.22;
+      robotLegs[1].rotation.x = -walk * 0.22;
 
-      robotHead.rotation.y =
-        Math.sin(robotFrame * 0.7) * 0.04;
+      robotFeet[0].rotation.x = -walk * 0.12;
+      robotFeet[1].rotation.x = walk * 0.12;
 
-      // Friendly arm movement
+      // Arms swing opposite to the legs
+      robotArms[0].rotation.x = -walk * 0.12;
+      robotArms[1].rotation.x = walk * 0.12;
+
       robotArms[0].rotation.z =
-        Math.sin(robotFrame * 1.5) * 0.10;
+        Math.sin(time * 1.5) * 0.06;
 
       robotArms[1].rotation.z =
-        -Math.sin(robotFrame * 1.5) * 0.10;
+        -Math.sin(time * 1.5) * 0.06;
 
-      // Blinking eyes
-      const now = Date.now();
+      // Head turns and small nods
+      robotHead.rotation.z =
+        Math.sin(time * 0.8) * 0.035;
 
+      robotHead.rotation.y =
+        Math.sin(time * 0.7) * 0.06;
+
+      robotHead.rotation.x =
+        isSpeaking ? Math.sin(time * 2.5) * 0.035 : 0;
+
+      // Occasional friendly wave
+      if (!waving && now - lastWave > 11000) {
+        waving = true;
+        waveStart = now;
+        lastWave = now;
+      }
+
+      if (waving) {
+        const elapsed = now - waveStart;
+
+        robotArms[1].rotation.z =
+          -0.65 - Math.sin(elapsed * 0.018) * 0.25;
+
+        if (elapsed > 1800) {
+          waving = false;
+        }
+      }
+
+      // Speaking gesture
+      if (isSpeaking) {
+        robotArms[0].rotation.z =
+          0.15 + Math.sin(time * 3) * 0.10;
+      }
+
+      // Blinking
       if (!blinking && now - lastBlink > 3500) {
         blinking = true;
         blinkTime = now;
@@ -827,13 +824,9 @@
         }
       }
 
-      // Mouth animation while ZENO speaks
-      const isSpeaking =
-        window.speechSynthesis &&
-        window.speechSynthesis.speaking;
-
+      // Mouth moves only while speaking
       robotMouth.scale.y = isSpeaking
-        ? 0.025 + Math.abs(Math.sin(robotFrame * 10)) * 0.11
+        ? 0.025 + Math.abs(Math.sin(time * 10)) * 0.11
         : 0.025;
 
       robotRenderer.render(robotScene, robotCamera);
@@ -842,7 +835,7 @@
     animate();
   }
 
-  // Load robot voices when the browser provides them.
+  // Load voices when the browser makes them available.
   if ("speechSynthesis" in window) {
     window.speechSynthesis.onvoiceschanged = () => {
       window.speechSynthesis.getVoices();
