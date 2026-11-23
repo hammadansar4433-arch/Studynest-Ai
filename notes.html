@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0f766e">
+  <title>AI Notes Generator | StudyNest</title>
+  <link rel="stylesheet" href="notes.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/">Study<span>Nest</span></a>
+    <nav><a href="/">← Back to StudyNest</a></nav>
+  </header>
+
+  <main class="shell">
+    <section class="intro">
+      <p class="eyebrow">STUDYNEST AI TOOLS</p>
+      <h1>Turn lessons into <span>clear notes.</span></h1>
+      <p class="muted">Create summaries, revision sheets, practice questions and simple explanations from your study material.</p>
+    </section>
+
+    <section class="panel">
+      <div class="panel-heading">
+        <div><p class="eyebrow">01 / YOUR MATERIAL</p><h2>Create study material</h2></div>
+        <span class="spark">✦ AI powered</span>
+      </div>
+
+      <label for="subject">Subject or chapter</label>
+      <input id="subject" maxlength="120" placeholder="e.g. Physics — Motion and Force">
+
+      <div class="two-col">
+        <div>
+          <label for="task">What should StudyNest create?</label>
+          <select id="task">
+            <option value="Detailed, well-organized study notes">Detailed notes</option>
+            <option value="A concise chapter summary">Short summary</option>
+            <option value="Important key points and definitions">Important points</option>
+            <option value="A revision sheet with key facts and formulas">Revision sheet</option>
+            <option value="Multiple-choice questions with four options and explained answers">MCQs with answers</option>
+            <option value="Short-answer and long-answer practice questions with model answers">Short and long questions</option>
+            <option value="A beginner-friendly explanation with simple examples">Explain simply</option>
+          </select>
+        </div>
+        <div>
+          <label for="language">Output language</label>
+          <select id="language">
+            <option>English</option>
+            <option>Urdu</option>
+            <option>Roman Urdu</option>
+          </select>
+        </div>
+      </div>
+
+      <label for="source">Paste your chapter or class notes</label>
+      <textarea id="source" maxlength="2400" placeholder="Paste the material you want to study here..."></textarea>
+      <div class="meta"><span id="char-count">0 / 2400 characters</span><span>Do not paste passwords or private information.</span></div>
+
+      <button class="primary full" id="generate">✦ Generate study material</button>
+      <p class="status" id="status" role="status" aria-live="polite">Your material stays in this browser unless you send it to the AI generator.</p>
+    </section>
+
+    <section class="panel output-panel">
+      <div class="panel-heading">
+        <div><p class="eyebrow">02 / YOUR RESULT</p><h2>Generated material</h2></div>
+        <span class="result-dot">● Ready</span>
+      </div>
+      <article id="result" class="result" aria-live="polite">Your generated notes will appear here.</article>
+      <div class="button-row">
+        <button class="secondary" id="copy">Copy</button>
+        <button class="secondary" id="download">Download .txt</button>
+        <button class="secondary" id="save">Save in this browser</button>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-heading"><div><p class="eyebrow">03 / YOUR LIBRARY</p><h2>Saved notes</h2></div></div>
+      <div id="saved-list" class="saved-list">No saved notes yet.</div>
+      <p class="hint">Saved notes are stored locally in this browser. They are not synced between devices.</p>
+    </section>
+    <p class="disclaimer">StudyNest AI can make mistakes. Check important facts, formulas and answers against your textbook or teacher's guidance.</p>
+  </main>
+  <script src="notes.js" defer></script>
+</body>
+</html>
