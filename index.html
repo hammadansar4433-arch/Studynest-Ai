@@ -368,5 +368,6 @@ const l=+localStorage.getItem('sn_ping')||0;if(Date.now()-l<6*36e5)return;const 
 let c='';try{c=JSON.parse(localStorage.getItem('studynest2')||'{}').cls||''}catch(e){}
 fetch('/api/notify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({n,vid,r:document.referrer,c}),keepalive:true}).catch(()=>{})}catch(e){}})();
 </script>
+<script src="/zeno-widget.js"></script>
 </body>
 </html>
