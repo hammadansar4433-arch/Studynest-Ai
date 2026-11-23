@@ -166,7 +166,7 @@ const match =
   matchingVoices[0];
 
 if (match) utterance.voice = match;
-    if (match) utterance.voice = match;
+ 
 
     utterance.onstart = () => {
       $("zeno-stage").classList.add("zeno-speaking");
