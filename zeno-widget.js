@@ -44,8 +44,20 @@
   .zeno-head strong{font-size:17px;color:#7dd3fc}
   .zeno-head small{display:block;color:#94a3b8;margin-top:3px}
   .zeno-close{background:none;border:0;color:white;font-size:23px;cursor:pointer}
-  #zeno-stage{height:185px;position:relative;background:
-    radial-gradient(ellipse at center,#15365a,#081323 70%);overflow:hidden}
+  #zeno-stage {
+  height: 220px;
+  min-height: 220px;
+  flex: 0 0 220px;
+  position: relative;
+  background: radial-gradient(ellipse at center,#15365a,#081323 70%);
+  overflow: hidden;
+}
+
+#zeno-stage canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
   #zeno-stage canvas{width:100%;height:100%;display:block}
   #zeno-fallback{position:absolute;inset:0;display:grid;place-items:center;font-size:85px}
   .zeno-tools{display:flex;gap:8px;padding:9px 12px}
@@ -140,12 +152,20 @@
     const utterance = new SpeechSynthesisUtterance(text);
     const lang = speechLanguage();
     utterance.lang = lang;
-    utterance.rate = 1;
-    utterance.pitch = 1.05;
-
+    utterance.rate = 1.08;
+    utterance.pitch = 1.3;
     const voices = window.speechSynthesis.getVoices();
     const prefix = lang.split("-")[0].toLowerCase();
-    const match = voices.find(v => v.lang.toLowerCase().startsWith(prefix));
+    const matchingVoices = voices.filter(v =>
+  v.lang.toLowerCase().startsWith(prefix)
+);
+
+const match =
+  matchingVoices.find(v => /young|natural|neural/i.test(v.name)) ||
+  matchingVoices.find(v => !/compact|novelty/i.test(v.name)) ||
+  matchingVoices[0];
+
+if (match) utterance.voice = match;
     if (match) utterance.voice = match;
 
     utterance.onstart = () => {
